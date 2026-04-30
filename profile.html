@@ -1,134 +1,192 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="en">
-
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
-    <title>Your Vents | Vently</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        background: "#0d0d1a",
-                        surface: "#1a1a2e",
-                        primary: "#7c3aed",
-                        "on-surface": "#e2e8f0",
-                        muted: "#94a3b8",
-                        error: "#ef4444"
-                    },
-                    fontFamily: {
-                        h1: ["Space Grotesk", "sans-serif"],
-                        h2: ["Space Grotesk", "sans-serif"],
-                        body: ["Inter", "sans-serif"]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #0d0d1a;
-            color: #e2e8f0;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile — Vently</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0d0d1a;--card:#1a1a2e;--accent:#7c3aed;--ag:#7c3aed33;
+      --text:#e2e8f0;--muted:#94a3b8;--border:#2d2d4e;--error:#ef4444;
+      --anxious:#f59e0b;--sad:#3b82f6;--angry:#ef4444;--lost:#6b7280;--hopeful:#10b981;
+      --r:14px;--rl:20px;--t:0.2s ease;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;min-height:100vh;padding-bottom:80px;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:360px;background:radial-gradient(ellipse,#7c3aed18 0%,transparent 70%);pointer-events:none;z-index:0}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
 
-        .font-heading {
-            font-family: 'Space Grotesk', sans-serif;
-        }
+    /* Header */
+    header.top{position:sticky;top:0;z-index:100;background:rgba(13,13,26,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .top-in{max-width:640px;margin:0 auto;padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:7px}
+    .ldot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent);animation:pdot 2.5s ease-in-out infinite}
+    @keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
+    .page-label{font-size:.8rem;color:var(--muted);font-weight:600}
 
-        .glass-nav {
-            background: rgba(13, 13, 26, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
+    /* Page */
+    .page{max-width:640px;margin:0 auto;padding:24px 16px 0;position:relative;z-index:1}
 
-        .bottom-nav {
-            background: rgba(13, 13, 26, 0.9);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-    </style>
+    /* Profile hero */
+    .profile-hero{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:22px 20px;margin-bottom:16px}
+    .avatar{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3b82f6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 0 0 3px var(--ag)}
+    .profile-info h2{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:3px;word-break:break-all}
+    .profile-info p{font-size:.78rem;color:var(--muted)}
+
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;text-align:center}
+    .stat-val{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent);display:block}
+    .stat-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+    /* Section head */
+    .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .sec-head h3{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+    .sec-head span{font-size:.73rem;color:var(--muted)}
+
+    /* Filter strip */
+    .mfilter{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+    .mfilter::-webkit-scrollbar{display:none}
+    .fchip{flex-shrink:0;padding:5px 13px;border-radius:99px;font-size:.77rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);transition:all var(--t)}
+    .fchip:hover{color:var(--text)}
+    .fchip.active{border-color:var(--accent);background:rgba(124,58,237,.15);color:var(--accent)}
+    .fchip[data-f=anxious].active{border-color:var(--anxious);background:rgba(245,158,11,.12);color:var(--anxious)}
+    .fchip[data-f=sad].active{border-color:var(--sad);background:rgba(59,130,246,.12);color:var(--sad)}
+    .fchip[data-f=angry].active{border-color:var(--angry);background:rgba(239,68,68,.12);color:var(--angry)}
+    .fchip[data-f=lost].active{border-color:var(--lost);background:rgba(107,114,128,.15);color:var(--lost)}
+    .fchip[data-f=hopeful].active{border-color:var(--hopeful);background:rgba(16,185,129,.12);color:var(--hopeful)}
+
+    /* Feed */
+    #my-feed{display:flex;flex-direction:column;gap:12px}
+    .vent-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px 12px;transition:border-color var(--t),transform var(--t);animation:cin .3s ease both}
+    @keyframes cin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .vent-card:hover{transform:translateY(-2px);border-color:rgba(124,58,237,.3)}
+    .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .mood-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .mood-tag.anxious{background:rgba(245,158,11,.12);color:var(--anxious)}
+    .mood-tag.sad{background:rgba(59,130,246,.12);color:var(--sad)}
+    .mood-tag.angry{background:rgba(239,68,68,.12);color:var(--angry)}
+    .mood-tag.lost{background:rgba(107,114,128,.15);color:var(--lost)}
+    .mood-tag.hopeful{background:rgba(16,185,129,.12);color:var(--hopeful)}
+    .time-ago{font-size:.72rem;color:var(--muted)}
+    .vent-text{font-size:.93rem;line-height:1.65;color:var(--text);margin-bottom:12px}
+    .reaction-row{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px}
+    .react-chip{font-size:.76rem;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:99px;padding:3px 10px;display:inline-flex;align-items:center;gap:4px}
+    .delete-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--error);border-radius:8px;padding:5px 12px;font-size:.76rem;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all var(--t)}
+    .delete-btn:hover{background:rgba(239,68,68,.18);border-color:var(--error)}
+
+    /* State msgs */
+    .state-msg{text-align:center;padding:50px 20px;color:var(--muted)}
+    .state-msg .ico{font-size:2.2rem;display:block;margin-bottom:10px}
+    .spin-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:50px 20px;color:var(--muted);font-size:.9rem}
+    .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex;animation:fi .2s ease}
+    @keyframes fi{from{opacity:0}to{opacity:1}}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:28px 24px;max-width:340px;width:100%;text-align:center;animation:si .25s ease}
+    @keyframes si{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+    .modal h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:8px}
+    .modal p{font-size:.86rem;color:var(--muted);margin-bottom:22px}
+    .modal-btns{display:flex;gap:10px}
+    .modal-btns button{flex:1;padding:10px;border-radius:10px;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;border:none;transition:all var(--t)}
+    .btn-cancel{background:rgba(255,255,255,.07);color:var(--muted)}
+    .btn-cancel:hover{color:var(--text)}
+    .btn-del{background:rgba(239,68,68,.12);color:var(--error);border:1px solid rgba(239,68,68,.3) !important}
+    .btn-del:hover{background:var(--error);color:#fff}
+
+    /* Bottom nav */
+    .bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,26,.92);backdrop-filter:blur(16px);border-top:1px solid var(--border);z-index:100}
+    .bnav-in{max-width:640px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;height:58px;padding:0 10px}
+    .nitem{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted);font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:color var(--t);padding:4px 12px;border-radius:10px}
+    .nitem .ni{font-size:1.25rem}
+    .nitem:hover{color:var(--text)}
+    .nitem.active{color:var(--accent)}
+
+    /* Toast */
+    #toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:99px;font-size:.84rem;font-weight:500;z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+    #toast.show{transform:translateX(-50%) translateY(0)}
+
+    @media(max-width:480px){.profile-hero{flex-direction:column;text-align:center}.stats-row{gap:8px}}
+  </style>
 </head>
+<body>
 
-<body class="min-h-screen pb-20">
-    <!-- Header -->
-    <header class="fixed top-0 w-full z-50 glass-nav">
-        <div class="flex justify-between items-center h-16 px-5 max-w-xl mx-auto">
-            <a class="flex items-center gap-2" href="index.html">
-                <span class="material-symbols-outlined text-primary text-2xl">bubble_chart</span>
-                <span class="font-heading text-xl font-bold tracking-tight text-on-surface">Vently</span>
-            </a>
-            <button
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-error/40 text-error hover:bg-error/10 active:scale-95 transition-all text-xs font-semibold"
-                id="logout-btn">
-                <span class="material-symbols-outlined text-sm">logout</span>
-                Logout
-            </button>
-        </div>
-    </header>
-    <!-- Main Content -->
-    <main class="pt-24 px-5 max-w-xl mx-auto">
-        <header class="mb-8">
-            <h1 class="font-heading text-3xl font-bold text-on-surface mb-1">Your Vents</h1>
-            <p class="text-muted text-base">Only you can see this page.</p>
-        </header>
-        <!-- Feed Container -->
-        <div class="space-y-4" id="my-feed">
-            <div class="flex flex-col items-center justify-center py-24 text-muted gap-4">
-                <span class="material-symbols-outlined animate-spin text-primary/60 text-3xl">progress_activity</span>
-                <span class="text-sm font-medium tracking-wide">Loading your vents...</span>
-            </div>
-        </div>
-    </main>
-    <!-- Bottom Navigation (Mobile Focused) -->
-    <nav class="fixed bottom-0 w-full z-50 bottom-nav safe-area-inset-bottom">
-        <div class="flex justify-around items-center h-16 max-w-xl mx-auto px-4">
-            <a class="text-muted hover:text-primary transition-colors flex flex-col items-center gap-0.5"
-                href="index.html">
-                <span class="material-symbols-outlined text-[28px]">home</span>
-            </a>
-            <a class="text-muted hover:text-primary transition-colors flex flex-col items-center gap-0.5"
-                href="search.html">
-                <span class="material-symbols-outlined text-[28px]">search</span>
-            </a>
-            <a class="text-primary flex flex-col items-center gap-0.5" href="profile.html">
-                <span class="material-symbols-outlined text-[28px]"
-                    style="font-variation-settings: 'FILL' 1;">account_circle</span>
-            </a>
-            <a class="text-muted hover:text-primary transition-colors flex flex-col items-center gap-0.5"
-                href="settings.html">
-                <span class="material-symbols-outlined text-[28px]">settings</span>
-            </a>
-        </div>
-    </nav>
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <script src="auth.js"></script>
-    <script src="app.js"></script>
-    <script src="profile.js"></script>
-    <script>
-        document.getElementById("logout-btn").addEventListener("click", () => {
-            if (typeof logout === "function") {
-                logout();
-            } else {
-                console.log("Logout function not found");
-            }
-        });
-    </script>
+<header class="top">
+  <div class="top-in">
+    <a href="index.html" class="logo">Vently<span class="ldot"></span></a>
+    <span class="page-label">My Profile</span>
+  </div>
+</header>
+
+<main class="page">
+  <!-- Profile hero -->
+  <div class="profile-hero">
+    <div class="avatar" id="avatar-el">🕊️</div>
+    <div class="profile-info">
+      <h2 id="user-email-display">Loading…</h2>
+      <p id="user-since">Member since —</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card"><span class="stat-val" id="stat-total">—</span><span class="stat-label">Vents</span></div>
+    <div class="stat-card"><span class="stat-val" id="stat-reactions">—</span><span class="stat-label">Reactions</span></div>
+    <div class="stat-card"><span class="stat-val" id="stat-mood">—</span><span class="stat-label">Top Mood</span></div>
+  </div>
+
+  <!-- My Vents -->
+  <div class="sec-head">
+    <h3>My Vents</h3>
+    <span id="vent-count-label"></span>
+  </div>
+
+  <div class="mfilter" id="my-mood-filter">
+    <button class="fchip active" data-f="all">✦ All</button>
+    <button class="fchip" data-f="anxious">😰 Anxious</button>
+    <button class="fchip" data-f="sad">💙 Sad</button>
+    <button class="fchip" data-f="angry">🔥 Angry</button>
+    <button class="fchip" data-f="lost">🌫️ Lost</button>
+    <button class="fchip" data-f="hopeful">🌱 Hopeful</button>
+  </div>
+
+  <div id="my-feed">
+    <div class="spin-wrap"><div class="spinner"></div>Loading your vents…</div>
+  </div>
+</main>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete this vent?</h3>
+    <p>This is permanent and can't be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="cancel-delete">Cancel</button>
+      <button class="btn-del" id="confirm-delete">Delete 🗑️</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bnav">
+  <div class="bnav-in">
+    <a href="index.html" class="nitem"><span class="ni">🏠</span>Home</a>
+    <a href="search.html" class="nitem"><span class="ni">🔍</span>Search</a>
+    <a href="profile.html" class="nitem active"><span class="ni">👤</span>Profile</a>
+    <a href="settings.html" class="nitem"><span class="ni">⚙️</span>Settings</a>
+  </div>
+</nav>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="profile.js"></script>
 </body>
-
 </html>
