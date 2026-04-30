@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search — Vently</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0d0d1a;--card:#1a1a2e;--accent:#7c3aed;--ag:#7c3aed33;
+      --text:#e2e8f0;--muted:#94a3b8;--border:#2d2d4e;
+      --anxious:#f59e0b;--sad:#3b82f6;--angry:#ef4444;--lost:#6b7280;--hopeful:#10b981;
+      --r:14px;--rl:20px;--t:.2s ease;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;min-height:100vh;padding-bottom:80px;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:360px;background:radial-gradient(ellipse,#7c3aed18 0%,transparent 70%);pointer-events:none;z-index:0}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+    header.top{position:sticky;top:0;z-index:100;background:rgba(13,13,26,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .top-in{max-width:640px;margin:0 auto;padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:7px}
+    .ldot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent);animation:pdot 2.5s ease-in-out infinite}
+    @keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
+
+    .page{max-width:640px;margin:0 auto;padding:24px 16px 0;position:relative;z-index:1}
+
+    /* Search box */
+    .search-wrap{position:relative;margin-bottom:16px}
+    .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1.1rem;pointer-events:none;opacity:.5}
+    #search-input{
+      width:100%;background:var(--card);border:1px solid var(--border);
+      border-radius:var(--rl);color:var(--text);
+      font-family:'Inter',sans-serif;font-size:.97rem;
+      padding:14px 44px 14px 46px;outline:none;
+      transition:border-color var(--t),box-shadow var(--t);
+    }
+    #search-input::placeholder{color:var(--muted)}
+    #search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--ag)}
+    .clear-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;display:none;transition:color var(--t);line-height:1}
+    .clear-btn:hover{color:var(--text)}
+    .clear-btn.visible{display:block}
+
+    /* Mood filter */
+    .mfilter{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none}
+    .mfilter::-webkit-scrollbar{display:none}
+    .fchip{flex-shrink:0;padding:5px 13px;border-radius:99px;font-size:.77rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);transition:all var(--t)}
+    .fchip:hover{color:var(--text)}
+    .fchip.active{border-color:var(--accent);background:rgba(124,58,237,.15);color:var(--accent)}
+    .fchip[data-f=anxious].active{border-color:var(--anxious);background:rgba(245,158,11,.12);color:var(--anxious)}
+    .fchip[data-f=sad].active{border-color:var(--sad);background:rgba(59,130,246,.12);color:var(--sad)}
+    .fchip[data-f=angry].active{border-color:var(--angry);background:rgba(239,68,68,.12);color:var(--angry)}
+    .fchip[data-f=lost].active{border-color:var(--lost);background:rgba(107,114,128,.15);color:var(--lost)}
+    .fchip[data-f=hopeful].active{border-color:var(--hopeful);background:rgba(16,185,129,.12);color:var(--hopeful)}
+
+    /* Results info */
+    .results-info{font-size:.78rem;color:var(--muted);margin-bottom:12px;min-height:18px}
+    .results-info em{color:var(--text);font-style:normal;font-weight:600}
+
+    /* Feed */
+    #search-feed{display:flex;flex-direction:column;gap:12px}
+    .vent-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px 14px;transition:border-color var(--t),transform var(--t);animation:cin .25s ease both}
+    @keyframes cin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .vent-card:hover{transform:translateY(-2px);border-color:rgba(124,58,237,.3)}
+    .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .mood-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .mood-tag.anxious{background:rgba(245,158,11,.12);color:var(--anxious)}
+    .mood-tag.sad{background:rgba(59,130,246,.12);color:var(--sad)}
+    .mood-tag.angry{background:rgba(239,68,68,.12);color:var(--angry)}
+    .mood-tag.lost{background:rgba(107,114,128,.15);color:var(--lost)}
+    .mood-tag.hopeful{background:rgba(16,185,129,.12);color:var(--hopeful)}
+    .time-ago{font-size:.72rem;color:var(--muted)}
+    .vent-text{font-size:.93rem;line-height:1.65;color:var(--text);margin-bottom:12px}
+    /* highlight search term */
+    .vent-text mark{background:rgba(124,58,237,.25);color:var(--accent);border-radius:3px;padding:0 2px}
+    .reaction-bar{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:10px}
+    .react-chip{font-size:.76rem;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:99px;padding:3px 10px;display:inline-flex;align-items:center;gap:4px}
+
+    /* State messages */
+    .state-msg{text-align:center;padding:50px 20px;color:var(--muted)}
+    .state-msg .ico{font-size:2.4rem;display:block;margin-bottom:12px}
+    .state-msg p{font-size:.9rem}
+    .state-msg small{font-size:.78rem;color:var(--border);display:block;margin-top:6px}
+
+    .spin-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:40px 20px;color:var(--muted);font-size:.9rem}
+    .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Bottom nav */
+    .bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,26,.92);backdrop-filter:blur(16px);border-top:1px solid var(--border);z-index:100}
+    .bnav-in{max-width:640px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;height:58px;padding:0 10px}
+    .nitem{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted);font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:color var(--t);padding:4px 12px;border-radius:10px}
+    .nitem .ni{font-size:1.25rem}
+    .nitem:hover{color:var(--text)}
+    .nitem.active{color:var(--accent)}
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a href="index.html" class="logo">Vently<span class="ldot"></span></a>
+    <span style="font-size:.8rem;color:var(--muted);font-weight:600">Search</span>
+  </div>
+</header>
+
+<main class="page">
+  <!-- Search input -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="search" id="search-input" placeholder="Search vents by keyword…" autocomplete="off" />
+    <button class="clear-btn" id="clear-search" title="Clear">✕</button>
+  </div>
+
+  <!-- Mood filter -->
+  <div class="mfilter" id="search-mood-filter">
+    <button class="fchip active" data-f="all">✦ All</button>
+    <button class="fchip" data-f="anxious">😰 Anxious</button>
+    <button class="fchip" data-f="sad">💙 Sad</button>
+    <button class="fchip" data-f="angry">🔥 Angry</button>
+    <button class="fchip" data-f="lost">🌫️ Lost</button>
+    <button class="fchip" data-f="hopeful">🌱 Hopeful</button>
+  </div>
+
+  <p class="results-info" id="results-info"></p>
+  <div id="search-feed"></div>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="bnav">
+  <div class="bnav-in">
+    <a href="index.html" class="nitem"><span class="ni">🏠</span>Home</a>
+    <a href="search.html" class="nitem active"><span class="ni">🔍</span>Search</a>
+    <a href="profile.html" class="nitem"><span class="ni">👤</span>Profile</a>
+    <a href="settings.html" class="nitem"><span class="ni">⚙️</span>Settings</a>
+  </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+  // ── Utilities ──────────────────────────────────────────────────
+  const MOOD_EMOJI = { anxious:'😰', sad:'💙', angry:'🔥', lost:'🌫️', hopeful:'🌱' };
+  function cap(s){ return s ? s[0].toUpperCase()+s.slice(1) : ''; }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function timeAgo(d){
+    const s=Math.floor((Date.now()-new Date(d))/1000);
+    if(s<60) return 'just now';
+    if(s<3600) return Math.floor(s/60)+'m ago';
+    if(s<86400) return Math.floor(s/3600)+'h ago';
+    return Math.floor(s/86400)+'d ago';
+  }
+  function highlight(text, query) {
+    if (!query) return esc(text);
+    const safe = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return esc(text).replace(new RegExp(safe, 'gi'), m => `<mark>${m}</mark>`);
+  }
+
+  // ── State ──────────────────────────────────────────────────────
+  let allVents = [];
+  let currentMood = null;
+  let currentQuery = '';
+  let debounceTimer = null;
+
+  // ── Boot ───────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Auth check
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+    } catch(e) { window.location.href = 'login.html'; return; }
+
+    await loadAll();
+    showInitialState();
+
+    // Search input
+    const inp = document.getElementById('search-input');
+    const clearBtn = document.getElementById('clear-search');
+
+    inp.addEventListener('input', () => {
+      currentQuery = inp.value.trim();
+      clearBtn.classList.toggle('visible', currentQuery.length > 0);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(doSearch, 280);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inp.value = '';
+      currentQuery = '';
+      clearBtn.classList.remove('visible');
+      showInitialState();
+    });
+
+    // Mood filters
+    document.querySelectorAll('#search-mood-filter .fchip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#search-mood-filter .fchip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentMood = chip.dataset.f === 'all' ? null : chip.dataset.f;
+        doSearch();
+      });
+    });
+  });
+
+  // ── Fetch all vents once ───────────────────────────────────────
+  async function loadAll() {
+    const feed = document.getElementById('search-feed');
+    feed.innerHTML = '<div class="spin-wrap"><div class="spinner"></div>Loading…</div>';
+    try {
+      const { data, error } = await supabaseClient
+        .from('vents').select('*').order('created_at',{ascending:false}).limit(200);
+      if (error) throw error;
+      allVents = data || [];
+    } catch(err) {
+      feed.innerHTML = `<div class="state-msg"><span class="ico">⚠️</span><p>Couldn't load vents.</p></div>`;
+    }
+  }
+
+  // ── Default: show recent vents ─────────────────────────────────
+  function showInitialState() {
+    const info = document.getElementById('results-info');
+    info.textContent = '';
+    renderResults(allVents.slice(0, 30), '');
+  }
+
+  // ── Search ─────────────────────────────────────────────────────
+  function doSearch() {
+    const q = currentQuery.toLowerCase();
+    const info = document.getElementById('results-info');
+
+    let results = allVents;
+    if (currentMood) results = results.filter(v => v.mood === currentMood);
+    if (q) results = results.filter(v => v.content && v.content.toLowerCase().includes(q));
+
+    if (!q && !currentMood) {
+      info.textContent = '';
+      renderResults(results.slice(0, 30), '');
+      return;
+    }
+
+    info.innerHTML = `Found <em>${results.length}</em> vent${results.length !== 1 ? 's' : ''}${q ? ' for "' + esc(currentQuery) + '"' : ''}`;
+    renderResults(results, currentQuery);
+  }
+
+  // ── Render ─────────────────────────────────────────────────────
+  function renderResults(vents, query) {
+    const feed = document.getElementById('search-feed');
+    const REACTIONS = ['❤️','😢','😤','🤝','🌱'];
+
+    if (vents.length === 0) {
+      feed.innerHTML = `<div class="state-msg">
+        <span class="ico">🔍</span>
+        <p>No vents found.</p>
+        <small>Try a different keyword or mood.</small>
+      </div>`;
+      return;
+    }
+
+    feed.innerHTML = '';
+    vents.forEach((v, i) => {
+      const r = v.reactions || {};
+      const card = document.createElement('div');
+      card.className = 'vent-card';
+      card.style.animationDelay = i * 30 + 'ms';
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="mood-tag ${v.mood||'lost'}">${MOOD_EMOJI[v.mood]||'💬'} ${cap(v.mood||'lost')}</span>
+          <span class="time-ago">${timeAgo(v.created_at)}</span>
+        </div>
+        <p class="vent-text">${highlight(v.content, query)}</p>
+        <div class="reaction-bar">
+          ${REACTIONS.map(e=>`<span class="react-chip">${e} ${r[e]||0}</span>`).join('')}
+        </div>`;
+      feed.appendChild(card);
+    });
+  }
+</script>
+</body>
+</html>

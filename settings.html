@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings — Vently</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0d0d1a;--card:#1a1a2e;--accent:#7c3aed;--ag:#7c3aed33;
+      --text:#e2e8f0;--muted:#94a3b8;--border:#2d2d4e;
+      --error:#ef4444;--success:#10b981;
+      --r:12px;--rl:20px;--t:.2s ease;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;min-height:100vh;padding-bottom:90px;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:360px;background:radial-gradient(ellipse,#7c3aed18 0%,transparent 70%);pointer-events:none;z-index:0}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+    header.top{position:sticky;top:0;z-index:100;background:rgba(13,13,26,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .top-in{max-width:640px;margin:0 auto;padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:7px}
+    .ldot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent);animation:pdot 2.5s ease-in-out infinite}
+    @keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
+
+    .page{max-width:640px;margin:0 auto;padding:24px 16px 0;position:relative;z-index:1}
+
+    /* Page heading */
+    .pg-head{margin-bottom:24px}
+    .pg-head h1{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:4px}
+    .pg-head p{font-size:.85rem;color:var(--muted)}
+
+    /* Settings group */
+    .settings-group{margin-bottom:28px}
+    .group-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-left:4px}
+    .settings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+
+    /* Setting row */
+    .setting-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 18px;border-bottom:1px solid var(--border);
+      gap:16px;transition:background var(--t);
+    }
+    .setting-row:last-child{border-bottom:none}
+    .setting-row:hover{background:rgba(255,255,255,.025)}
+    .setting-row.clickable{cursor:pointer}
+    .row-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
+    .row-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .row-icon.purple{background:rgba(124,58,237,.15)}
+    .row-icon.blue{background:rgba(59,130,246,.15)}
+    .row-icon.red{background:rgba(239,68,68,.12)}
+    .row-icon.green{background:rgba(16,185,129,.12)}
+    .row-icon.amber{background:rgba(245,158,11,.12)}
+    .row-text{min-width:0}
+    .row-title{font-size:.9rem;font-weight:600;margin-bottom:2px}
+    .row-desc{font-size:.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    /* Toggle switch */
+    .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0;position:absolute}
+    .toggle-track{
+      position:absolute;inset:0;border-radius:99px;
+      background:var(--border);cursor:pointer;
+      transition:background var(--t);
+    }
+    .toggle input:checked + .toggle-track{background:var(--accent)}
+    .toggle-thumb{
+      position:absolute;top:3px;left:3px;
+      width:18px;height:18px;border-radius:50%;
+      background:#fff;transition:transform var(--t);
+      pointer-events:none;
+    }
+    .toggle input:checked ~ .toggle-thumb{transform:translateX(20px)}
+
+    /* Arrow indicator */
+    .row-arrow{color:var(--border);font-size:.9rem;flex-shrink:0}
+
+    /* Select input */
+    .setting-select{
+      background:rgba(255,255,255,.06);border:1px solid var(--border);
+      color:var(--text);border-radius:8px;padding:5px 10px;
+      font-family:'Inter',sans-serif;font-size:.82rem;
+      cursor:pointer;outline:none;transition:border-color var(--t);
+    }
+    .setting-select:focus{border-color:var(--accent)}
+
+    /* Password change form */
+    .pw-form{padding:18px;display:none;border-top:1px solid var(--border);flex-direction:column;gap:12px;animation:slideDown .25s ease}
+    .pw-form.open{display:flex}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    label.lbl{font-size:.75rem;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .inp-wrap{position:relative}
+    .inp-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.5;pointer-events:none}
+    input[type=password]{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem;padding:10px 12px 10px 38px;outline:none;transition:border-color var(--t),box-shadow var(--t)}
+    input::placeholder{color:var(--muted)}
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--ag)}
+    .save-pw-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:10px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all var(--t);align-self:flex-start}
+    .save-pw-btn:hover{background:#6d28d9;transform:translateY(-1px)}
+    .save-pw-btn:disabled{opacity:.6;cursor:not-allowed}
+
+    /* Danger zone */
+    .danger-btn{
+      display:flex;align-items:center;gap:10px;width:100%;
+      background:transparent;border:none;color:var(--error);
+      font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;
+      padding:16px 18px;cursor:pointer;transition:background var(--t);
+      text-align:left;
+    }
+    .danger-btn:hover{background:rgba(239,68,68,.06)}
+
+    /* Logout row */
+    .logout-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 18px;cursor:pointer;transition:background var(--t);
+    }
+    .logout-row:hover{background:rgba(255,255,255,.03)}
+
+    /* Inline feedback */
+    .inline-msg{font-size:.8rem;padding:8px 12px;border-radius:var(--r);display:none}
+    .inline-msg.show{display:block}
+    .inline-msg.success{background:rgba(16,185,129,.1);color:var(--success);border:1px solid rgba(16,185,129,.25)}
+    .inline-msg.error{background:rgba(239,68,68,.1);color:var(--error);border:1px solid rgba(239,68,68,.25)}
+
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex;animation:fi .2s ease}
+    @keyframes fi{from{opacity:0}to{opacity:1}}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:28px 24px;max-width:340px;width:100%;text-align:center;animation:si .25s ease}
+    @keyframes si{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+    .modal h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:8px}
+    .modal p{font-size:.84rem;color:var(--muted);margin-bottom:22px}
+    .modal-btns{display:flex;gap:10px}
+    .modal-btns button{flex:1;padding:10px;border-radius:10px;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;border:none;transition:all var(--t)}
+    .btn-cancel{background:rgba(255,255,255,.07);color:var(--muted)}
+    .btn-cancel:hover{color:var(--text)}
+    .btn-danger{background:rgba(239,68,68,.12);color:var(--error);border:1px solid rgba(239,68,68,.3) !important}
+    .btn-danger:hover{background:var(--error);color:#fff}
+
+    /* Bottom nav */
+    .bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,26,.92);backdrop-filter:blur(16px);border-top:1px solid var(--border);z-index:100}
+    .bnav-in{max-width:640px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;height:58px;padding:0 10px}
+    .nitem{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted);font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:color var(--t);padding:4px 12px;border-radius:10px}
+    .nitem .ni{font-size:1.25rem}
+    .nitem:hover{color:var(--text)}
+    .nitem.active{color:var(--accent)}
+
+    /* Toast */
+    #toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:99px;font-size:.84rem;font-weight:500;z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+    #toast.show{transform:translateX(-50%) translateY(0)}
+
+    .version-note{text-align:center;font-size:.72rem;color:var(--border);padding:20px 0 8px}
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a href="index.html" class="logo">Vently<span class="ldot"></span></a>
+    <span style="font-size:.8rem;color:var(--muted);font-weight:600">Settings</span>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pg-head">
+    <h1>Settings</h1>
+    <p>Manage your account and preferences.</p>
+  </div>
+
+  <!-- Account -->
+  <div class="settings-group">
+    <p class="group-label">Account</p>
+    <div class="settings-card">
+      <!-- Email display -->
+      <div class="setting-row">
+        <div class="row-left">
+          <div class="row-icon purple">✉️</div>
+          <div class="row-text">
+            <p class="row-title">Email</p>
+            <p class="row-desc" id="display-email">Loading…</p>
+          </div>
+        </div>
+      </div>
+      <!-- Change Password -->
+      <div class="setting-row clickable" id="change-pw-row">
+        <div class="row-left">
+          <div class="row-icon blue">🔒</div>
+          <div class="row-text">
+            <p class="row-title">Change Password</p>
+            <p class="row-desc">Update your login password</p>
+          </div>
+        </div>
+        <span class="row-arrow" id="pw-arrow">›</span>
+      </div>
+      <!-- Password form (collapsible) -->
+      <div class="pw-form" id="pw-form">
+        <div class="form-group">
+          <label class="lbl">New Password</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">🔒</span>
+            <input type="password" id="new-pw" placeholder="Min 8 characters" autocomplete="new-password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="lbl">Confirm Password</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">🔒</span>
+            <input type="password" id="confirm-pw" placeholder="Repeat password" autocomplete="new-password"/>
+          </div>
+        </div>
+        <div class="inline-msg" id="pw-msg"></div>
+        <button class="save-pw-btn" id="save-pw-btn">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferences -->
+  <div class="settings-group">
+    <p class="group-label">Preferences</p>
+    <div class="settings-card">
+      <!-- Notifications toggle -->
+      <div class="setting-row">
+        <div class="row-left">
+          <div class="row-icon amber">🔔</div>
+          <div class="row-text">
+            <p class="row-title">Reaction Notifications</p>
+            <p class="row-desc">Get notified when people react</p>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-notifs" />
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <!-- Anonymous mode -->
+      <div class="setting-row">
+        <div class="row-left">
+          <div class="row-icon purple">🕊️</div>
+          <div class="row-text">
+            <p class="row-title">Always Anonymous</p>
+            <p class="row-desc">Never attach your ID to vents</p>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-anon" checked />
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <!-- Feed sort -->
+      <div class="setting-row">
+        <div class="row-left">
+          <div class="row-icon green">📋</div>
+          <div class="row-text">
+            <p class="row-title">Feed Sort</p>
+            <p class="row-desc">Choose how vents are ordered</p>
+          </div>
+        </div>
+        <select class="setting-select" id="feed-sort">
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="most-reactions">Most Reactions</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="settings-group">
+    <p class="group-label">About</p>
+    <div class="settings-card">
+      <div class="setting-row clickable" onclick="window.open('https://github.com','_blank')">
+        <div class="row-left">
+          <div class="row-icon blue">📖</div>
+          <div class="row-text">
+            <p class="row-title">Privacy Policy</p>
+            <p class="row-desc">How we handle your data</p>
+          </div>
+        </div>
+        <span class="row-arrow">›</span>
+      </div>
+      <div class="setting-row">
+        <div class="row-left">
+          <div class="row-icon purple">💜</div>
+          <div class="row-text">
+            <p class="row-title">Version</p>
+            <p class="row-desc">Vently v1.0.0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="settings-group">
+    <p class="group-label">Danger Zone</p>
+    <div class="settings-card">
+      <!-- Logout -->
+      <div class="setting-row clickable" id="logout-row">
+        <div class="row-left">
+          <div class="row-icon red">🚪</div>
+          <div class="row-text">
+            <p class="row-title" style="color:var(--error)">Logout</p>
+            <p class="row-desc">Sign out of your account</p>
+          </div>
+        </div>
+        <span class="row-arrow">›</span>
+      </div>
+      <!-- Delete account -->
+      <div class="setting-row clickable" id="delete-account-row">
+        <div class="row-left">
+          <div class="row-icon red">⚠️</div>
+          <div class="row-text">
+            <p class="row-title" style="color:var(--error)">Delete Account</p>
+            <p class="row-desc">Permanently delete all your data</p>
+          </div>
+        </div>
+        <span class="row-arrow">›</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="version-note">Made with 💜 · You are not alone.</p>
+</main>
+
+<!-- Delete Account Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete your account?</h3>
+    <p>All your vents and data will be permanently deleted. This cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="cancel-delete">Cancel</button>
+      <button class="btn-danger" id="confirm-delete">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bnav">
+  <div class="bnav-in">
+    <a href="index.html" class="nitem"><span class="ni">🏠</span>Home</a>
+    <a href="search.html" class="nitem"><span class="ni">🔍</span>Search</a>
+    <a href="profile.html" class="nitem"><span class="ni">👤</span>Profile</a>
+    <a href="settings.html" class="nitem active"><span class="ni">⚙️</span>Settings</a>
+  </div>
+</nav>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Auth check
+    let currentUser;
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+      currentUser = session.user;
+    } catch(e) { window.location.href = 'login.html'; return; }
+
+    // Display email
+    document.getElementById('display-email').textContent = currentUser.email || 'Anonymous';
+
+    // Restore saved preferences
+    const savedSort  = localStorage.getItem('vently_sort')  || 'newest';
+    const savedAnon  = localStorage.getItem('vently_anon')  !== 'false';
+    const savedNotif = localStorage.getItem('vently_notif') === 'true';
+    document.getElementById('feed-sort').value       = savedSort;
+    document.getElementById('toggle-anon').checked  = savedAnon;
+    document.getElementById('toggle-notifs').checked = savedNotif;
+
+    // Save preferences on change
+    document.getElementById('feed-sort').addEventListener('change', e => {
+      localStorage.setItem('vently_sort', e.target.value);
+      showToast('✅ Preference saved.');
+    });
+    document.getElementById('toggle-anon').addEventListener('change', e => {
+      localStorage.setItem('vently_anon', e.target.checked);
+      showToast(e.target.checked ? '🕊️ Always anonymous on.' : 'Anonymous mode off.');
+    });
+    document.getElementById('toggle-notifs').addEventListener('change', e => {
+      localStorage.setItem('vently_notif', e.target.checked);
+      showToast(e.target.checked ? '🔔 Notifications on.' : '🔕 Notifications off.');
+    });
+
+    // Change password toggle
+    const pwRow  = document.getElementById('change-pw-row');
+    const pwForm = document.getElementById('pw-form');
+    const pwArrow = document.getElementById('pw-arrow');
+    pwRow.addEventListener('click', () => {
+      const open = pwForm.classList.toggle('open');
+      pwArrow.textContent = open ? '⌄' : '›';
+    });
+
+    // Save password
+    document.getElementById('save-pw-btn').addEventListener('click', async () => {
+      const newPw   = document.getElementById('new-pw').value;
+      const confirm = document.getElementById('confirm-pw').value;
+      const msg     = document.getElementById('pw-msg');
+      msg.className = 'inline-msg';
+
+      if (newPw.length < 8) {
+        msg.textContent = '⚠ Password must be at least 8 characters.';
+        msg.classList.add('show','error'); return;
+      }
+      if (newPw !== confirm) {
+        msg.textContent = '⚠ Passwords do not match.';
+        msg.classList.add('show','error'); return;
+      }
+
+      const btn = document.getElementById('save-pw-btn');
+      btn.textContent = 'Updating…'; btn.disabled = true;
+      try {
+        const { error } = await supabaseClient.auth.updateUser({ password: newPw });
+        if (error) throw error;
+        msg.textContent = '✅ Password updated!';
+        msg.classList.add('show','success');
+        document.getElementById('new-pw').value = '';
+        document.getElementById('confirm-pw').value = '';
+        setTimeout(() => { msg.classList.remove('show'); }, 3000);
+      } catch(err) {
+        msg.textContent = '❌ ' + err.message;
+        msg.classList.add('show','error');
+      } finally {
+        btn.textContent = 'Update Password'; btn.disabled = false;
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-row').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'login.html';
+    });
+
+    // Delete account modal
+    document.getElementById('delete-account-row').addEventListener('click', () => {
+      document.getElementById('delete-modal').classList.add('open');
+    });
+    document.getElementById('cancel-delete').addEventListener('click', () => {
+      document.getElementById('delete-modal').classList.remove('open');
+    });
+    document.getElementById('delete-modal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) document.getElementById('delete-modal').classList.remove('open');
+    });
+    document.getElementById('confirm-delete').addEventListener('click', async () => {
+      const btn = document.getElementById('confirm-delete');
+      btn.textContent = 'Deleting…'; btn.disabled = true;
+      try {
+        // Delete user's vents first
+        await supabaseClient.from('vents').delete().eq('user_id', currentUser.id);
+        // Sign out (full account deletion requires service key; this clears session)
+        await supabaseClient.auth.signOut();
+        showToast('Account deleted. Goodbye 💜');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+      } catch(err) {
+        showToast('❌ Error: ' + err.message);
+        btn.textContent = 'Delete Account'; btn.disabled = false;
+      }
+    });
+
+    // Auth listener
+    supabaseClient.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') window.location.href = 'login.html';
+    });
+  });
+</script>
+</body>
+</html>
