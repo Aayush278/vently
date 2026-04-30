@@ -59,6 +59,7 @@
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
+            padding-bottom: 80px;
         }
 
         /* ─── Scrollbar ─────────────────────────────────────────────── */
@@ -710,13 +711,13 @@
         /* ─── Toast ──────────────────────────────────────────────────── */
         #toast {
             position: fixed;
-            bottom: 28px;
+            bottom: 74px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: var(--card);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 12px 22px;
+            padding: 10px 20px;
             border-radius: var(--radius-xl);
             font-size: 0.875rem;
             font-weight: 500;
@@ -731,20 +732,31 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ─── Footer ─────────────────────────────────────────────────── */
-        footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(13, 13, 26, 0.9);
+        /* ─── Bottom Nav ──────────────────────────────────────────────── */
+        .bnav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(13,13,26,0.92);
+            backdrop-filter: blur(16px);
             border-top: 1px solid var(--border);
-            text-align: center;
-            padding: 10px;
-            font-size: 0.72rem;
-            color: var(--muted);
-            z-index: 50;
+            z-index: 100;
         }
+        .bnav-in {
+            max-width: 680px; margin: 0 auto;
+            display: flex; justify-content: space-around;
+            align-items: center; height: 58px; padding: 0 10px;
+        }
+        .nitem {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 2px; text-decoration: none; color: var(--muted);
+            font-size: 0.6rem; font-weight: 600;
+            letter-spacing: 0.04em; text-transform: uppercase;
+            transition: color var(--transition); padding: 4px 12px; border-radius: 10px;
+        }
+        .nitem .ni { font-size: 1.25rem; }
+        .nitem:hover { color: var(--text); }
+        .nitem.active { color: var(--accent); }
+
+
 
         /* ─── Responsive ─────────────────────────────────────────────── */
         @media (max-width: 480px) {
@@ -858,8 +870,15 @@
         </div>
     </main>
 
-    <!-- ── Footer ─────────────────────────────────── -->
-    <footer>Made with 💜 · Vently · You are not alone.</footer>
+    <!-- ── Bottom Nav ──────────────────────────────── -->
+    <nav class="bnav">
+      <div class="bnav-in">
+        <a href="index.html" class="nitem active"><span class="ni">🏠</span>Home</a>
+        <a href="search.html" class="nitem"><span class="ni">🔍</span>Search</a>
+        <a href="profile.html" class="nitem"><span class="ni">👤</span>Profile</a>
+        <a href="settings.html" class="nitem"><span class="ni">⚙️</span>Settings</a>
+      </div>
+    </nav>
 
     <!-- ── Toast ──────────────────────────────────── -->
     <div id="toast" role="status" aria-live="polite"></div>
